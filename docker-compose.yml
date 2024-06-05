@@ -1,9 +1,55 @@
 version: "3.8"
 
 services:
-  emotion-classification:
-    build:
-      context: .
-      dockerfile: .docker/Dockerfile
-    ports:
-      - 8000:8000
+
+  # Emotion classification app
+  mlapp:
+      build:
+          context: .
+          dockerfile: .docker/Dockerfile
+      environment:
+          - CELERY_BROKER=amqp://guest:guest@rabbitmq3:5672/
+          - CELERY_BACKEND=redis://localhost:6379/1
+      ports:
+          - 8000:8000
+
+  # Redis
+  redis:
+      image: redis:7.0.15-alpine
+      hostname: redis
+      expose:
+          - 6379
+      healthcheck:
+          test: ["CMD-SHELL", "redis-cli ping"]
+          interval: 30s
+          timeout: 10s
+          retries: 3
+
+  # RabbitMQ
+  rabbitmq:
+      hostname: rabbit
+      image: rabbitmq:3.13.3-management-alpine
+      ports:
+          - 15672:15672
+      expose:
+          - 5672
+      healthcheck:
+          test: ["CMD", "rabbitmqctl", "status"]
+          interval: 30s
+          timeout: 10s
+          retries: 3
+
+  # Celery worker
+  celery-worker:
+      build: .
+      command: sh -c "poetry run celery -A src.worker.tasks.celery_app worker --loglevel=info"
+      volumes:
+          - .:/app
+      depends_on:
+          - mlapp
+          - rabbitmq
+          - redis
+
+networks:
+    default:
+        name: bagel

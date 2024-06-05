@@ -1,3 +1,4 @@
+from loguru import logger
 from transformers import pipeline
 import torch
 
@@ -26,5 +27,10 @@ class EmotionClassifier:
         Returns:
             dict: The result of the prediction as dictionary.
         """
-        result = cls.model(text)
+        result = cls.model(text)[0]
+
+        # result = {'label': 'TEST', 'score': 1.}
+        
+        logger.info(f"Prediction result: {result}")
+        
         return result
