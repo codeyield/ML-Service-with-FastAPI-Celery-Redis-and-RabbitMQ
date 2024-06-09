@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.9"
 
 services:
 
@@ -6,30 +6,29 @@ services:
     mlapp:
         build:
             context: .
-            dockerfile: Dockerfile
-        # entrypoint: ["/bin/sh", "-c"]
-        command: poetry run python tmain.py
+            dockerfile: docker/app/Dockerfile
         volumes:
             - .:/app
         depends_on:
-            - celery-worker
+            celery-worker:
+                condition: service_started
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
         ports:
             - 8000:8000
 
     # Celery worker
-    # command: sh -c "poetry run celery -A src.worker.tasks.celery_app worker --loglevel=info"
     celery-worker:
-        build: .
-        environment:
-            - CELERY_BROKER=redis://redis:6379/0        # amqp://guest:guest@rabbitmq3:5672/
-            - CELERY_BACKEND=redis://redis:6379/0
-        # entrypoint: ["/bin/sh", "-c"]
-        command: poetry run celery -A tworker.celery_app worker --loglevel=info --logfile=/logs/celery.log
+        build:
+            context: .
+            dockerfile: docker/worker/Dockerfile
         volumes:
             - .:/app
             - ./.logs:/logs
         depends_on:
-            # - rabbitmq
+            - rabbitmq
             - redis
 
     # Redis
@@ -44,22 +43,22 @@ services:
             timeout: 10s
             retries: 3
 
-    # # RabbitMQ
-    # rabbitmq:
-    #     image: rabbitmq:3.13.3-management-alpine
-    #     hostname: rabbitmq3
-    #     environment:
-    #         - RABBITMQ_DEFAULT_USER=guest
-    #         - RABBITMQ_DEFAULT_PASS=guest
-    #     ports:
-    #         - 15672:15672
-    #     expose:
-    #         - 5672
-    #     healthcheck:
-    #         test: ["CMD", "rabbitmqctl", "status"]
-    #         interval: 30s
-    #         timeout: 10s
-    #         retries: 3
+    # RabbitMQ
+    rabbitmq:
+        image: rabbitmq:3.13.3-management-alpine
+        hostname: rabbitmq3
+        environment:
+            - RABBITMQ_DEFAULT_USER=guest
+            - RABBITMQ_DEFAULT_PASS=guest
+        ports:
+            - 15672:15672
+        expose:
+            - 5672
+        healthcheck:
+            test: ["CMD", "rabbitmqctl", "status"]
+            interval: 30s
+            timeout: 10s
+            retries: 3
 
 networks:
     default:

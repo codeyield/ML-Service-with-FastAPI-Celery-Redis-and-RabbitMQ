@@ -19,6 +19,4 @@ if __name__ == '__main__':
     task = celery_app.send_task('hello_world')
     result = task.get()     # timeout=10
 
-    # task = celery_app.apply_async('hello_world', args=[123, 456], callback=handle_result)
-    
     print(f'Result: {result}')
