@@ -11,8 +11,8 @@ uvicorn = "^0.15.0"
 loguru = "^0.7.2"
 celery = {version = "5.4.0", extras = ["redis"]}
 rabbitmq = "0.2.0"
-transformers = "^4.16.0"
-torch = "^2.2.2"
+# transformers = "^4.16.0"
+# torch = "^2.2.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
