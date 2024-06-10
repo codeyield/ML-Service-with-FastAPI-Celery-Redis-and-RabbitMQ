@@ -6,8 +6,5 @@ PREDICT_TASK_NAME = "analyze_sentiment"
 
 TIMEOUT = 20
 
-# redis://localhost:6379/0 | os.getenv('CELERY_BROKER')
-# redis://localhost:6379/0 | os.getenv('CELERY_BACKEND')
-
 CELERY_BROKER = 'amqp://guest:guest@rabbitmq3:5672/'
 CELERY_BACKEND = 'redis://redis:6379/0'

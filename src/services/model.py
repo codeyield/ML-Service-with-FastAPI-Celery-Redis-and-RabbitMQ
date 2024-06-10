@@ -4,6 +4,7 @@ import torch
 
 torch.set_num_threads(1)
 
+
 class EmotionClassifier:
     """
     An emotion classifier based on a pre-trained Transformers model.
@@ -26,9 +27,5 @@ class EmotionClassifier:
             dict: The result of the prediction as dictionary.
         """
         result = cls.model(text)[0]
-
-        # result = {'label': 'TEST', 'score': 1.}
-        
-        # logger.info(f"Prediction result: {str(result)}")
         
         return result

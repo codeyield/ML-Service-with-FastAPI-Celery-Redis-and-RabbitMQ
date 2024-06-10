@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI
 
 from src.schemas.prediction import TextRequest, PredictionResult
 from src.schemas.healthcheck import HealthcheckResult

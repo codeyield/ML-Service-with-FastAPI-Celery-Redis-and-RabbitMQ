@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "emotion-classification-service"
-version = "0.1.0"
-description = "ML service for classifying emotions in text"
-authors = ["Your Name <your.email@example.com>"]
+name = "mlservice-fastapi-celery-redis-rabbitmq"
+version = "0.1.1"
+description = "Hi-loaded Model Service API example"
+authors = ["Dmitry P. codeyield <dppostbox@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
