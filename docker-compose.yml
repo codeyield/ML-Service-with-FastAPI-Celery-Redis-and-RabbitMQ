@@ -7,6 +7,9 @@ services:
         build:
             context: ./src
             dockerfile: Dockerfile
+        environment:
+            # Launch the App via entrypoint.sh
+            - APP_MODE=app
         volumes:
             - ./src:/app/src
         depends_on:
@@ -18,19 +21,29 @@ services:
                 condition: service_healthy
         ports:
             - 8000:8000
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000/heathcheck/"]
+            interval: 20s
+            timeout: 10s
+            retries: 3
 
     # Celery worker
     celery-worker:
         build:
             context: ./src
-            dockerfile: celery/Dockerfile
+            dockerfile: Dockerfile
+        environment:
+            # Launch the Worker via entrypoint.sh
+            - APP_MODE=worker
         volumes:
             - ./src:/app/src
             - ./.logs:/logs
         depends_on:
-            - rabbitmq
-            - redis
-
+            redis:
+                condition: service_healthy
+            rabbitmq:
+                condition: service_healthy
+ 
     # Redis
     redis:
         image: redis:7.0.15-alpine

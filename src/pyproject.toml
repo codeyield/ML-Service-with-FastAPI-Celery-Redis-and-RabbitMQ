@@ -11,8 +11,6 @@ uvicorn = "^0.30.1"
 loguru = "^0.7.2"
 celery = {extras = ["redis"], version = "^5.4.0"}
 rabbitmq = "^0.2.0"
-
-[tool.poetry.group.ml.dependencies]
 transformers = "^4.41.2"
 torch = "^2.3.0"
 

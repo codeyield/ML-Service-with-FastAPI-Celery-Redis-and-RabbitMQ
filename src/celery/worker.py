@@ -2,7 +2,6 @@ from loguru import logger
 
 from src.celery.start import celery
 from src.services.model import EmotionClassifier
-# from src.schemas.prediction import TextRequest
 
 from src.constants import PREDICT_TASK_NAME
 

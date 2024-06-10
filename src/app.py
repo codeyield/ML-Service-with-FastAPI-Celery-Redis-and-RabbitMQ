@@ -3,10 +3,6 @@ from fastapi import FastAPI, BackgroundTasks
 from src.schemas.prediction import TextRequest, PredictionResult
 from src.schemas.healthcheck import HealthcheckResult
 
-# from src.middleware.logging import LoggingMiddleware
-# from src.middleware.cors import CustomCORSMiddleware
-
-from src.services.model import EmotionClassifier
 from src.services.lifespan import LifespanLogging
 from src.celery.start import celery
 
@@ -31,8 +27,6 @@ app = FastAPI(title=TITLE, description=DESCRIPTION, version=VERSION,
 async def predict_emotion(text_request: TextRequest) -> PredictionResult:
     task = celery.send_task(PREDICT_TASK_NAME, args=[text_request.text])
     result = task.get(timeout=TIMEOUT)
-
-    # result = EmotionClassifier.predict_emotion(text_request.text)
     return result
 
 
