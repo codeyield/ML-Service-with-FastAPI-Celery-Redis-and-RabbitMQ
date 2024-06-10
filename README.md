@@ -1,38 +1,37 @@
-# Model Service API
+# Hi-loaded Model Service API
 
-Example The ML Service is a web application that provides an API for interacting with a machine learning model. It allows users to send queries with prediction data and get results back.
+This is an example of a web application that provides a highly loaded API to interact with the ML model. Here a pre-trained Transformer model is used to predict the sentiment for the input text.
 
-**FastAPI**, **Celery**, **RabbitMQ** and **Redis** are used to create a system capable of asynchronously analysing the emotional colouring of texts.
+**FastAPI**, **Celery**, **Redis** and **RabbitMQ** are used to create a system that processes a large stream of incoming requests in asynchronous mode.
 
-## Startup logic
+## Operational logic
 
-Operating Logic:
+- The client sends an HTTP request with text data in json to the FastAPI endpoint.
+- FastAPI receives the request, validates it and creates a new Celery task.
+- Celery asynchronously queues the RabbitMQ broker running "under the bonnet".
+- Celery Worker asynchronously fetches a task from the queue and sends it to the ML model, receives the response and returns the result.
+- Redis is used to cache intermediate results to speed up repeated requests with the same data.
+- The response is returned via RabbitMQ to FastAPI, which sends it back to the client as an HTTP response.
 
-- The client sends an HTTP request with text data to FastAPI.
-- FastAPI receives the request, checks it and sends the task to Celery for processing via RabbitMQ.
-- Celery gets the task from the queue and sends it to the ML model to analyse the text, processes the response and returns the result.
-- While processing the query, Celery can use Redis to cache intermediate results to speed up repeated queries with the same data.
-- The result is returned back via RabbitMQ to FastAPI, which sends it back to the client as an HTTP response.
-
-When launched, the application initializes FastAPI, which handles HTTP requests. The app also connects to the machine learning model and loads it into memory for use in making predictions.
+## Project structure
 
 ```
-.
-├── .docker
-│   └── Dockerfile              # Docker image with app
 ├── docker-compose.yml          # Docker container managing
-├── pyproject.toml              # Dependencies
 └── src
+    ├── Dockerfile              # Docker container for App & Worker
     ├── app.py                  # Main app, FastAPI initializing
-    ├── constansts.py           # Global app constants
+    ├── constansts.py           # Global app's constants
+    ├── entrypoint.sh           # Script for launching the App or Worker
+    ├── pyproject.toml          # Dependencies
+    ├── celery                  # Package with Celery & Worker
+    │   ├── start.py            # Celery initializing
+    │   └── worker.py           # Celery worker
     ├── schemas                 # Package with data models
-    │   ├── healthcheck.py      # Model for service state responses
-    │   └── requests.py         # Model for input requests to the API
-    ├── services                # Package with ML model
-    │   ├── model.py            # ML model with prediction
-    │   └── utils.py            # Supporting utilities
-    └── worker                  # Package with worker(s)
-        └── tasks.py            # Celery worker
+    │   ├── healthcheck.py      # Schema for service health state responses
+    │   └── prediction.py       # Schema for input requests to the API
+    └── services                # Package with ML model & services
+        ├── lifespan.py         # At startup & at completion logging
+        └── model.py            # ML model with prediction
 ```
 
 ## Launching with Docker Compose
@@ -58,11 +57,3 @@ curl -X 'POST' \
   "text": "Hey, what's up? What's new?"
 }'
 ```
-
-## Launching locally
-
-`pip install --no-cache-dir poetry`
-
-`poetry install --no-dev`
-
-`poetry run uvicorn src.app:app --host localhost --port 8000`
