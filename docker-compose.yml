@@ -5,10 +5,10 @@ services:
     # ML app
     mlapp:
         build:
-            context: .
-            dockerfile: docker/app/Dockerfile
+            context: ./src
+            dockerfile: Dockerfile
         volumes:
-            - .:/app
+            - ./src:/app/src
         depends_on:
             celery-worker:
                 condition: service_started
@@ -22,10 +22,10 @@ services:
     # Celery worker
     celery-worker:
         build:
-            context: .
-            dockerfile: docker/worker/Dockerfile
+            context: ./src
+            dockerfile: celery/Dockerfile
         volumes:
-            - .:/app
+            - ./src:/app/src
             - ./.logs:/logs
         depends_on:
             - rabbitmq
@@ -39,9 +39,9 @@ services:
             - 6379
         healthcheck:
             test: ["CMD-SHELL", "redis-cli ping"]
-            interval: 30s
+            interval: 20s
             timeout: 10s
-            retries: 3
+            retries: 5
 
     # RabbitMQ
     rabbitmq:
@@ -56,9 +56,9 @@ services:
             - 5672
         healthcheck:
             test: ["CMD", "rabbitmqctl", "status"]
-            interval: 30s
+            interval: 20s
             timeout: 10s
-            retries: 3
+            retries: 5
 
 networks:
     default:
