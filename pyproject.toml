@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "mlservice-fastapi-celery-redis-rabbitmq"
-version = "0.1.1"
-description = "Hi-loaded Model Service API example"
+name = "ML Service with FastAPI, Celery, Redis and RabbitMQ"
+version = "0.1.2"
+description = "Hi-loaded Model Service API example to predict the sentiment for the input text"
 authors = ["Dmitry P. codeyield <dppostbox@gmail.com>"]
 
 [tool.poetry.dependencies]
@@ -13,6 +13,7 @@ celery = {extras = ["redis"], version = "^5.4.0"}
 rabbitmq = "^0.2.0"
 transformers = "^4.41.2"
 torch = "^2.3.0"
+toml = "^0.10.2"
 
 
 [build-system]
