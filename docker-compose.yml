@@ -2,14 +2,12 @@ version: "3.9"
 
 services:
 
-    # ML app
+    # Application
     mlapp:
         build:
-            context: ./src
-            dockerfile: Dockerfile
-        environment:
-            # Launch the App via entrypoint.sh
-            - APP_MODE=app
+            context: .
+            dockerfile: src/Dockerfile
+        command: ["sh", "-c", "poetry run uvicorn src.app:app --host 0.0.0.0 --port 8000"]
         volumes:
             - ./src:/app/src
         depends_on:
@@ -25,16 +23,14 @@ services:
             test: ["CMD", "curl", "-f", "http://localhost:8000/heathcheck/"]
             interval: 20s
             timeout: 10s
-            retries: 3
+            retries: 5
 
     # Celery worker
     celery-worker:
         build:
-            context: ./src
-            dockerfile: Dockerfile
-        environment:
-            # Launch the Worker via entrypoint.sh
-            - APP_MODE=worker
+            context: .
+            dockerfile: src/Dockerfile
+        command: ["sh", "-c", "poetry run celery -A src.celery.worker.celery worker --loglevel=info --logfile=/logs/celery.log"]
         volumes:
             - ./src:/app/src
             - ./.logs:/logs
