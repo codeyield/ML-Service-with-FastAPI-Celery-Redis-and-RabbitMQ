@@ -8,16 +8,19 @@ from src.celery.start import celery
 
 from loguru import logger
 from datetime import datetime, timezone
+import toml
 import sys
 
-from src.constants import TITLE, DESCRIPTION, VERSION, TIMEOUT
-from src.constants import PREDICT_TASK_NAME
+from src.constants import PREDICT_TASK_NAME, TIMEOUT
 
 
 logger.add(sys.stderr, level="INFO")
+cfg = toml.load('pyproject.toml')
 
 
-app = FastAPI(title=TITLE, description=DESCRIPTION, version=VERSION, 
+app = FastAPI(title=cfg['tool']['poetry']['name'], 
+              description=cfg['tool']['poetry']['description'], 
+              version=cfg['tool']['poetry']['version'], 
               lifespan=LifespanLogging.lifespan,
               debug=False
               )
