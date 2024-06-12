@@ -17,21 +17,20 @@ This is an example of a web application that provides a highly loaded API to int
 
 ```
 ├── docker-compose.yml          # Docker container managing
+├── pyproject.toml              # Dependencies
 └── src
-    ├── Dockerfile              # Docker container for App & Worker
-    ├── app.py                  # Main app, FastAPI initializing
+    ├── app.py                  # Main app with FastAPI initializing
     ├── constansts.py           # Global app's constants
-    ├── entrypoint.sh           # Script for launching the App or Worker
-    ├── pyproject.toml          # Dependencies
-    ├── celery                  # Package with Celery & Worker
+    ├── Dockerfile              # Docker container for app and worker
+    ├── celery                  # Package with Celery and its Worker
     │   ├── start.py            # Celery initializing
     │   └── worker.py           # Celery worker
     ├── schemas                 # Package with data models
     │   ├── healthcheck.py      # Schema for service health state responses
     │   └── prediction.py       # Schema for input requests to the API
-    └── services                # Package with ML model & services
-        ├── lifespan.py         # At startup & at completion logging
-        └── model.py            # ML model with prediction
+    └── services                # Package with ML model and services
+        ├── lifespan.py         # At startup and at completion logging
+        └── model.py            # ML model with sentiment prediction
 ```
 
 ## Launching with Docker Compose
@@ -57,3 +56,5 @@ curl -X 'POST' \
   "text": "Hey, what's up? What's new?"
 }'
 ```
+
+You can also send this request through the UI.
